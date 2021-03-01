@@ -1,2 +1,3 @@
-# r3f-input-field
-React three fiber input field
+# r3f-text-field
+
+React three fiber text field.
