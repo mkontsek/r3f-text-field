@@ -11,8 +11,8 @@ type SetProps = {
 };
 
 export class Vec3 extends Vector3 {
-  static fromCoordinates(x: number, y: number, z: number) {
-    return new Vec3(x, y, z);
+  constructor(...props) {
+    super(...props);
   }
 
   raw(): Vector3Array {
