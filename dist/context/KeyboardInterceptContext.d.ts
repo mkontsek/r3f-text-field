@@ -3,7 +3,7 @@ import { Font } from "three";
 import { InterceptState } from "./types";
 declare type ContextProps = InterceptState & {
     font?: Font;
-    handleTextTooWide(x: number): boolean;
+    confirmTextWidth(x: number): boolean;
 };
 export declare const KeyboardInterceptContext: React.Context<ContextProps>;
 declare type Props = {

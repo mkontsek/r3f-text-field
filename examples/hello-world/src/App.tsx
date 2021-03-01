@@ -13,9 +13,9 @@ export function App() {
       <pointLight position={[10, 10, 10]} />
 
       <TextField
-        defaultValue="Hello, world!"
+        defaultValue="Hello!"
         position={new Vector3(0, 0, 0)}
-        onChange={(s) => console.log(s)}
+        onChange={(s: string) => console.log(s)}
         fontPath={`${process.env.PUBLIC_URL}/helvetiker_regular.typeface.json`}
       />
     </Canvas>

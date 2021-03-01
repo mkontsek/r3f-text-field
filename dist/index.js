@@ -1,17 +1,10 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var jsxRuntime = require('react/jsx-runtime');
-var React = require('react');
-var React__default = _interopDefault(React);
-var three = require('three');
-var reactThreeFiber = require('react-three-fiber');
+import { jsxs, jsx } from 'react/jsx-runtime';
+import React, { Suspense } from 'react';
+import { Vector3, FontLoader } from 'three';
+import { useLoader, useFrame } from 'react-three-fiber';
 
 const MIN_DISTANCE = 0.01;
-class Vec3 extends three.Vector3 {
+class Vec3 extends Vector3 {
     constructor(...props) {
         super(...props);
     }
@@ -77,8 +70,8 @@ function __rest(s, e) {
 
 function Background(_a) {
     var { position, height = 1, width } = _a, restProps = __rest(_a, ["position", "height", "width"]);
-    return (jsxRuntime.jsxs("mesh", Object.assign({}, restProps, { position: position.raw() }, { children: [jsxRuntime.jsx("boxBufferGeometry", { args: [width, height, MIN_DISTANCE] }, void 0),
-            jsxRuntime.jsx("meshStandardMaterial", { color: "white" }, void 0)] }), void 0));
+    return (jsxs("mesh", Object.assign({}, restProps, { position: position.raw() }, { children: [jsx("boxBufferGeometry", { args: [width, height, MIN_DISTANCE] }, void 0),
+            jsx("meshStandardMaterial", { color: "white" }, void 0)] }), void 0));
 }
 
 function blink(ref, everyMillis) {
@@ -177,18 +170,19 @@ function handleInterceptInput(key, state) {
     return handleNewKey(key, state);
 }
 
-const KeyboardInterceptContext = React__default.createContext({
+const KeyboardInterceptContext = React.createContext({
     buffer: "",
     font: undefined,
     cursorIndex: 0,
-    handleTextTooWide: () => false,
+    confirmTextWidth: () => false,
 });
 const KeyboardInterceptProvider = ({ onChange, fontPath, width, defaultValue, children, }) => {
-    const [state, setState] = React__default.useState({
+    var _a;
+    const [state, setState] = React.useState({
         buffer: defaultValue !== null && defaultValue !== void 0 ? defaultValue : "",
-        cursorIndex: 0,
+        cursorIndex: (_a = defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.length) !== null && _a !== void 0 ? _a : 0,
     });
-    const font = reactThreeFiber.useLoader(three.FontLoader, fontPath);
+    const font = useLoader(FontLoader, fontPath);
     const handleKeyDown = ({ key }) => {
         const newState = handleInterceptInput(key, state);
         setState(newState);
@@ -204,13 +198,13 @@ const KeyboardInterceptProvider = ({ onChange, fontPath, width, defaultValue, ch
         onChange(newState.buffer);
         return true;
     };
-    React__default.useEffect(() => {
+    React.useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
     });
-    return (jsxRuntime.jsx(KeyboardInterceptContext.Provider, Object.assign({ value: Object.assign(Object.assign({}, state), { handleTextTooWide: confirmTextWidth, font }) }, { children: children }), void 0));
+    return (jsx(KeyboardInterceptContext.Provider, Object.assign({ value: Object.assign(Object.assign({}, state), { confirmTextWidth, font }) }, { children: children }), void 0));
 };
 
 const CURSOR_BLINK_INTERVAL = 1000;
@@ -231,13 +225,13 @@ function getWhitespacePadding(buffer, cursorIndex) {
 
 function TextCursor(_a) {
     var { position, textMesh, color = "black", fontSize } = _a, restProps = __rest(_a, ["position", "textMesh", "color", "fontSize"]);
-    const { buffer, cursorIndex, handleTextTooWide } = React__default.useContext(KeyboardInterceptContext);
-    const [cursorPosition, setCursorPosition] = React__default.useState(position);
-    const meshRef = React__default.useRef({ visible: true });
-    reactThreeFiber.useFrame(() => {
+    const { buffer, cursorIndex, confirmTextWidth } = React.useContext(KeyboardInterceptContext);
+    const [cursorPosition, setCursorPosition] = React.useState(position);
+    const meshRef = React.useRef({ visible: true });
+    useFrame(() => {
         blink(meshRef, CURSOR_BLINK_INTERVAL);
     });
-    React__default.useEffect(() => {
+    const updateCursor = () => {
         const size = getTextSize(textMesh);
         if (!size) {
             return;
@@ -246,12 +240,15 @@ function TextCursor(_a) {
         const whitespacePadding = getWhitespacePadding(buffer, cursorIndex);
         const newWidth = size.x + paddingIfAtLeastOneChar + whitespacePadding;
         const newX = position.x + newWidth;
-        if (!handleTextTooWide(newWidth)) {
+        if (!confirmTextWidth(newWidth)) {
             setCursorPosition(cursorPosition.setXYZ({ x: newX }));
         }
-    }, [buffer, cursorIndex]);
-    return (jsxRuntime.jsxs("mesh", Object.assign({ ref: meshRef, position: cursorPosition.raw() }, restProps, { children: [jsxRuntime.jsx("boxBufferGeometry", { args: [CURSOR_WIDTH, CURSOR_HEIGHT, MIN_DISTANCE] }, void 0),
-            jsxRuntime.jsx("meshStandardMaterial", { color: color }, void 0)] }), void 0));
+    };
+    React.useEffect(() => {
+        updateCursor();
+    }, [textMesh, buffer, cursorIndex]);
+    return (jsxs("mesh", Object.assign({ ref: meshRef, position: cursorPosition.raw() }, restProps, { children: [jsx("boxBufferGeometry", { args: [CURSOR_WIDTH, CURSOR_HEIGHT, MIN_DISTANCE] }, void 0),
+            jsx("meshStandardMaterial", { color: color }, void 0)] }), void 0));
 }
 
 function Text(_a) {
@@ -260,38 +257,42 @@ function Text(_a) {
         return null;
     }
     const textPosition = getTextPosition(position, padding);
-    return (jsxRuntime.jsxs("mesh", Object.assign({ ref: myRef }, restProps, { position: textPosition.raw() }, { children: [jsxRuntime.jsx("shapeGeometry", { args: [shapes] }, void 0),
-            jsxRuntime.jsx("meshBasicMaterial", { color: color, transparent: isTransparent }, void 0)] }), void 0));
+    return (jsxs("mesh", Object.assign({ ref: myRef }, restProps, { position: textPosition.raw() }, { children: [jsx("shapeGeometry", { args: [shapes] }, void 0),
+            jsx("meshBasicMaterial", { color: color, transparent: isTransparent }, void 0)] }), void 0));
 }
 
 function TextWithCursor({ position, color = "black", fontSize = 0.6, width, padding, }) {
-    const { buffer, font, cursorIndex } = React__default.useContext(KeyboardInterceptContext);
-    const textRef = React__default.useRef();
-    const cursorTextRef = React__default.useRef();
+    const { buffer, font, cursorIndex } = React.useContext(KeyboardInterceptContext);
+    const textRef = React.useRef();
+    const cursorTextRef = React.useRef();
+    const [cursorTextMesh, setCursorTextMesh] = React.useState();
     const textShapes = font === null || font === void 0 ? void 0 : font.generateShapes(buffer, fontSize);
     const cursorShapes = font === null || font === void 0 ? void 0 : font.generateShapes(buffer.slice(0, cursorIndex), fontSize);
     const cursorPosition = getCursorPosition({
         position,
         width,
     });
-    return (jsxRuntime.jsxs("group", Object.assign({ position: position.raw() }, { children: [jsxRuntime.jsx(Text, { myRef: cursorTextRef, position: cursorPosition, padding: padding, shapes: cursorShapes, isTransparent: true }, void 0),
-            jsxRuntime.jsx(Text, { myRef: textRef, position: cursorPosition, padding: padding, shapes: textShapes, color: color }, void 0),
-            jsxRuntime.jsx(TextCursor, { textMesh: cursorTextRef.current, position: cursorPosition, fontSize: fontSize }, void 0)] }), void 0));
+    React.useEffect(() => {
+        setCursorTextMesh(cursorTextRef.current);
+    }, [cursorTextRef]);
+    return (jsxs("group", Object.assign({ position: position.raw() }, { children: [jsx(Text, { myRef: cursorTextRef, position: cursorPosition, padding: padding, shapes: cursorShapes, isTransparent: true }, void 0),
+            jsx(Text, { myRef: textRef, position: cursorPosition, padding: padding, shapes: textShapes, color: color }, void 0),
+            jsx(TextCursor, { textMesh: cursorTextMesh, position: cursorPosition, fontSize: fontSize }, void 0)] }), void 0));
 }
 
 function Border(_a) {
     var { position, height = 1, width, borderWidth = 0.2 } = _a, restProps = __rest(_a, ["position", "height", "width", "borderWidth"]);
     const borderPosition = position.moveX(-MIN_DISTANCE).lift(-MIN_DISTANCE);
-    return (jsxRuntime.jsxs("mesh", Object.assign({}, restProps, { position: borderPosition.raw() }, { children: [jsxRuntime.jsx("boxBufferGeometry", { args: [width + borderWidth, height + borderWidth, MIN_DISTANCE] }, void 0),
-            jsxRuntime.jsx("meshStandardMaterial", { color: "darkgrey" }, void 0)] }), void 0));
+    return (jsxs("mesh", Object.assign({}, restProps, { position: borderPosition.raw() }, { children: [jsx("boxBufferGeometry", { args: [width + borderWidth, height + borderWidth, MIN_DISTANCE] }, void 0),
+            jsx("meshStandardMaterial", { color: "darkgrey" }, void 0)] }), void 0));
 }
 
 function TextField({ defaultValue, position, width = 5, padding = { left: 0.1 }, borderWidth, onChange = () => { }, fontPath, }) {
     const vec3position = new Vec3(position.x, position.y, position.z);
-    return (jsxRuntime.jsx(React.Suspense, Object.assign({ fallback: "" }, { children: jsxRuntime.jsx(KeyboardInterceptProvider, Object.assign({ onChange: onChange, fontPath: fontPath, width: width, defaultValue: defaultValue }, { children: jsxRuntime.jsxs("group", Object.assign({ position: vec3position.raw() }, { children: [jsxRuntime.jsx(Border, { position: vec3position, width: width + padding.left, borderWidth: borderWidth }, void 0),
-                    jsxRuntime.jsx(Background, { position: vec3position, width: width + padding.left }, void 0),
-                    jsxRuntime.jsx(TextWithCursor, { position: vec3position, width: width, padding: padding }, void 0)] }), void 0) }), void 0) }), void 0));
+    return (jsx(Suspense, Object.assign({ fallback: "" }, { children: jsx(KeyboardInterceptProvider, Object.assign({ onChange: onChange, fontPath: fontPath, width: width, defaultValue: defaultValue }, { children: jsxs("group", Object.assign({ position: vec3position.raw() }, { children: [jsx(Border, { position: vec3position, width: width + padding.left, borderWidth: borderWidth }, void 0),
+                    jsx(Background, { position: vec3position, width: width + padding.left }, void 0),
+                    jsx(TextWithCursor, { position: vec3position, width: width, padding: padding }, void 0)] }), void 0) }), void 0) }), void 0));
 }
 
-exports.TextField = TextField;
+export { TextField };
 //# sourceMappingURL=index.js.map

@@ -28,6 +28,7 @@ export function TextWithCursor({
   );
   const textRef = React.useRef<Mesh>();
   const cursorTextRef = React.useRef<Mesh>();
+  const [cursorTextMesh, setCursorTextMesh] = React.useState<Mesh>();
 
   const textShapes = font?.generateShapes(buffer, fontSize);
   const cursorShapes = font?.generateShapes(
@@ -38,6 +39,10 @@ export function TextWithCursor({
     position,
     width,
   });
+
+  React.useEffect(() => {
+    setCursorTextMesh(cursorTextRef.current);
+  }, [cursorTextRef]);
 
   return (
     <group position={position.raw()}>
@@ -56,7 +61,7 @@ export function TextWithCursor({
         color={color}
       />
       <TextCursor
-        textMesh={cursorTextRef.current}
+        textMesh={cursorTextMesh}
         position={cursorPosition}
         fontSize={fontSize}
       />

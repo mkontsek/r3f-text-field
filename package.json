@@ -2,7 +2,7 @@
   "author": "Martin Kontsek",
   "name": "r3f-text-field",
   "description": "Text field for React Three Fiber",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "homepage": "https://github.com/mkontsek/r3f-text-field",
   "keywords": [
@@ -25,13 +25,13 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-scripts": "4.0.2",
-    "react-three-fiber": "5.3.18",
     "three": "0.121"
   },
   "peerDependencies": {
     "react": ">=17.0",
     "react-dom": ">=17.0",
-    "three": "0.121"
+    "three": "0.121",
+    "react-three-fiber": "5.3.18"
   },
   "scripts": {
     "build": "rollup -c",

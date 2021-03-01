@@ -27,7 +27,7 @@ export function TextCursor({
   fontSize,
   ...restProps
 }: Props) {
-  const { buffer, cursorIndex, handleTextTooWide } = React.useContext(
+  const { buffer, cursorIndex, confirmTextWidth } = React.useContext(
     KeyboardInterceptContext
   );
   const [cursorPosition, setCursorPosition] = React.useState(position);
@@ -37,7 +37,7 @@ export function TextCursor({
     blink(meshRef, CURSOR_BLINK_INTERVAL);
   });
 
-  React.useEffect(() => {
+  const updateCursor = () => {
     const size = getTextSize(textMesh);
 
     if (!size) {
@@ -49,10 +49,14 @@ export function TextCursor({
     const newWidth = size.x + paddingIfAtLeastOneChar + whitespacePadding;
     const newX = position.x + newWidth;
 
-    if (!handleTextTooWide(newWidth)) {
+    if (!confirmTextWidth(newWidth)) {
       setCursorPosition(cursorPosition.setXYZ({ x: newX }));
     }
-  }, [buffer, cursorIndex]);
+  };
+
+  React.useEffect(() => {
+    updateCursor();
+  }, [textMesh, buffer, cursorIndex]);
 
   return (
     <mesh ref={meshRef} position={cursorPosition.raw()} {...restProps}>

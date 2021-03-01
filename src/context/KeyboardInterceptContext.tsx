@@ -7,14 +7,14 @@ import { InterceptState } from "./types";
 
 type ContextProps = InterceptState & {
   font?: Font;
-  handleTextTooWide(x: number): boolean;
+  confirmTextWidth(x: number): boolean;
 };
 
 export const KeyboardInterceptContext = React.createContext<ContextProps>({
   buffer: "",
   font: undefined,
   cursorIndex: 0,
-  handleTextTooWide: () => false,
+  confirmTextWidth: () => false,
 });
 
 type Props = {
@@ -34,7 +34,7 @@ export const KeyboardInterceptProvider = ({
 }: Props) => {
   const [state, setState] = React.useState<InterceptState>({
     buffer: defaultValue ?? "",
-    cursorIndex: 0,
+    cursorIndex: defaultValue?.length ?? 0,
   });
   const font = useLoader(FontLoader, fontPath);
 
@@ -72,7 +72,7 @@ export const KeyboardInterceptProvider = ({
 
   return (
     <KeyboardInterceptContext.Provider
-      value={{ ...state, handleTextTooWide: confirmTextWidth, font }}
+      value={{ ...state, confirmTextWidth, font }}
     >
       {children}
     </KeyboardInterceptContext.Provider>

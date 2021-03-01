@@ -15,11 +15,6 @@
     "web-vitals": "^1.0.1",
     "three": "0.121"
   },
-  "peerDependencies": {
-    "react": ">=17.0",
-    "react-dom": ">=17.0",
-    "three": ">=0.121"
-  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

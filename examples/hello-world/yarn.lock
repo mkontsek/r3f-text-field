@@ -1468,6 +1468,14 @@
     "@rollup/pluginutils" "^3.1.0"
     magic-string "^0.25.7"
 
+"@rollup/plugin-typescript@^8.2.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-typescript/-/plugin-typescript-8.2.0.tgz#3e2059cbcae916785d8d7bf07816210c829f817c"
+  integrity sha512-5DyVsb7L+ehLfNPu/nat8Gq3uJGzku4bMFPt90XahtgiSBf7z9YKPLqFUJKMT41W/mJ98SVGDPOhzikGrr/Lhg==
+  dependencies:
+    "@rollup/pluginutils" "^3.1.0"
+    resolve "^1.17.0"
+
 "@rollup/pluginutils@^3.0.8", "@rollup/pluginutils@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-3.1.0.tgz#706b4524ee6dc8b103b3c995533e5ad680c02b9b"
@@ -8855,10 +8863,11 @@ queue-microtask@^1.2.2:
   integrity sha512-dB15eXv3p2jDlbOiNLyMabYg1/sXvppd8DP2J3EOCQ0AkuSXCW2tP7mnVouVLJKgUMY6yP0kcQDVpLCN13h4Xg==
 
 r3f-text-field@^0.1.0:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/r3f-text-field/-/r3f-text-field-0.1.2.tgz#114469b92dc9c0469cb424c4cde189b122a1dffa"
-  integrity sha512-YMJ6c2pSvZ17NVhvdhB9Bl//8iGkWg56sqOtA8tFiS3A5xuq7vVkgpjnQNd6PEbg8ZwqUapuYeUn83P0z/XEZQ==
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/r3f-text-field/-/r3f-text-field-0.1.3.tgz#726f56ce069f3449698c923f22d0248f54f23a18"
+  integrity sha512-+8kKyD842oiKCnzDkmApbaVvedZjOqZmqJsWrzAtQUCem/RNhqivlYrmR9WR8yx/8+LXve80VMEaIjwnKgeZVw==
   dependencies:
+    "@rollup/plugin-typescript" "^8.2.0"
     blob-util "2.0.2"
     react "17.0.1"
     react-dom "17.0.1"
